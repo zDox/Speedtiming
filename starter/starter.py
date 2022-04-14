@@ -1,7 +1,10 @@
 import random
+import sys
+
+sys.path.append("../packets")
 
 from network_starter import NetworkStarter
-import packet_types as pt
+from packets import packet_types as pt
 
 from time import time, sleep
 
@@ -17,7 +20,7 @@ class Starter:
     def start_run(self):
         for i in range(COUNTDOWN_TIME):
             sleep(1)
-            print(COUNTDOWN_TIME-i)
+            print(COUNTDOWN_TIME - i)
         sleep(random.uniform(0, RANDOM_TIME_FACTOR))
         start_time = time()
         print("GOOO")

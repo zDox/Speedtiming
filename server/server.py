@@ -2,7 +2,8 @@ import pickle
 import socket
 import sys
 import threading as tr
-import packet_types as pt
+sys.path.append("../packets")
+from packets import packet_types as pt
 from run import Run
 from sensor import Sensor
 
