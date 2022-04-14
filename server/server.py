@@ -2,7 +2,7 @@ import pickle
 import socket
 import sys
 import threading as tr
-from packets import packet_types as pt
+import packet_types as pt
 from run import Run
 from sensor import Sensor
 
