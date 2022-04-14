@@ -16,6 +16,8 @@ class Run:
             distance, strength, temperature = self.sensor.read_data()
             if 30 < distance < 60:
                 self.set_lane(1, time())
+                break
+        print(self.lanes)
 
     def set_lane(self, id, final_time):
         self.lanes[id] = {

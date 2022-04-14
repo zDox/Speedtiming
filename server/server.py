@@ -3,7 +3,7 @@ import socket
 import sys
 import threading as tr
 sys.path.append("../packets")
-from packets import packet_types as pt
+import packet_types as pt
 from run import Run
 from sensor import Sensor
 

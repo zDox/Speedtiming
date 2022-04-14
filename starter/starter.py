@@ -4,7 +4,7 @@ import sys
 sys.path.append("../packets")
 
 from network_starter import NetworkStarter
-from packets import packet_types as pt
+import packet_types as pt
 
 from time import time, sleep
 
