@@ -25,12 +25,13 @@ class Run:
         for i in range(const.LANE_COUNT):
             if i not in self.lanes and strength > 1000:
                 if i * const.LANE_WIDTH + const.LANE_OFFSET < distance < (i + 1) * const.LANE_WIDTH + const.LANE_OFFSET:
-                        self.set_lane(i, final_time)
+                        self.set_lane(i, final_time, distance)
 
         return const.LANE_COUNT == len(self.lanes.keys())
 
-    def set_lane(self, id, final_time):
+    def set_lane(self, id, final_time, distance):
         self.lanes[id] = {
             "final_time": final_time,
-            "total_time": final_time - self.start_time
+            "total_time": final_time - self.start_time,
+            "distance": distance,
         }
