@@ -1,7 +1,11 @@
+import os
 import random
 import sys
-
-sys.path.append("../packets")
+path = os.path.dirname(os.path.abspath(__file__)).split("/")
+path.pop(-1)
+path.append("packets")
+print(path)
+sys.path.append("/".join(path))
 
 from network_starter import NetworkStarter
 import packet_types as pt

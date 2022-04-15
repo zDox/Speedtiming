@@ -1,8 +1,13 @@
+import os
 import pickle
 import socket
 import sys
 import threading as tr
-sys.path.append("../packets")
+path = os.path.dirname(os.path.abspath(__file__)).split("/")
+path.pop(-1)
+path.append("packets")
+print(path)
+sys.path.append("/".join(path))
 import packet_types as pt
 from run import Run
 from sensor import Sensor
