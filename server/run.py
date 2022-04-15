@@ -23,7 +23,7 @@ class Run:
     def set_lanes(self, distance, strength, final_time):
         # Goes through all lanes and checks if the distance is inside their lane
         for i in range(const.LANE_COUNT):
-            if i not in self.lanes:
+            if i not in self.lanes and strength > 1000:
                 if i * const.LANE_WIDTH + const.LANE_OFFSET < distance < (i + 1) * const.LANE_WIDTH + const.LANE_OFFSET:
                         self.set_lane(i, final_time)
 
