@@ -22,13 +22,12 @@ class Run:
 
     def set_lanes(self, distance, final_time):
         # Goes through all lanes and checks if the distance is inside their lane
-        done = True
         for i in range(const.LANE_COUNT):
-            if i * const.LANE_WIDTH + const.LANE_OFFSET < distance < (i + 1) * const.LANE_WIDTH + const.LANE_OFFSET:
-                self.set_lane(i, final_time)
             if i not in self.lanes:
-                done = False
-        return done
+                if i * const.LANE_WIDTH + const.LANE_OFFSET < distance < (i + 1) * const.LANE_WIDTH + const.LANE_OFFSET:
+                        self.set_lane(i, final_time)
+
+        return const.LANE_COUNT == len(self.lanes.keys())
 
     def set_lane(self, id, final_time):
         self.lanes[id] = {
