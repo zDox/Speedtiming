@@ -17,10 +17,10 @@ class Run:
         while not done:
             distance, strength, temperature = self.sensor.read_data()
             final_time = time()
-            done = self.set_lanes(distance, final_time)
-            print(self.lanes)
+            done = self.set_lanes(distance, strength, final_time)
+            print(self.lanes, strength)
 
-    def set_lanes(self, distance, final_time):
+    def set_lanes(self, distance, strength, final_time):
         # Goes through all lanes and checks if the distance is inside their lane
         for i in range(const.LANE_COUNT):
             if i not in self.lanes:
