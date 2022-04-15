@@ -1,5 +1,6 @@
 import threading as tr
 from time import time
+import constants as const
 
 
 class Run:
@@ -12,12 +13,22 @@ class Run:
         thread.start()
 
     def measure(self):
-        while True:
+        done = False
+        while not done:
             distance, strength, temperature = self.sensor.read_data()
-            if 30 < distance < 60:
-                self.set_lane(1, time())
-                break
-        print(self.lanes)
+            final_time = time()
+            done = self.set_lanes(distance, final_time)
+            print(self.lanes)
+
+    def set_lanes(self, distance, final_time):
+        # Goes through all lanes and checks if the distance is inside their lane
+        done = True
+        for i in range(const.LANE_COUNT):
+            if i * const.LANE_WIDTH + const.LANE_OFFSET < distance < (i + 1) * const.LANE_WIDTH + const.LANE_OFFSET:
+                self.set_lane(i, final_time)
+            if i not in self.lanes:
+                done = False
+        return done
 
     def set_lane(self, id, final_time):
         self.lanes[id] = {
