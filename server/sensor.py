@@ -1,13 +1,13 @@
-import serial, time
-import numpy as np
+import serial
+import time
 
 
 class Sensor:
     def __init__(self):
-        self.ser = serial.Serial("/dev/serial0", 115200, timeout=0)  # mini UART serial device
+        self.ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=0)  # mini UART serial device
         if not self.ser.isOpen():
             self.ser.open()  # open serial port if not open
-        self.set_samp_rate(250)
+        self.set_samp_rate(200)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.ser.close()
