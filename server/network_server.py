@@ -3,6 +3,7 @@ import pickle
 import socket
 import sys
 import threading as tr
+
 path = os.path.dirname(os.path.abspath(__file__)).split("/")
 path.pop(-1)
 path.append("packets")
@@ -57,7 +58,7 @@ class NetworkServer:
 
         buffer_enc_length = str(buffer_length).encode(FORMAT)
         buffer_enc_length += b' ' * (
-                    HEADER - len(buffer_enc_length))  # fill up buffer, until it has the expected size
+                HEADER - len(buffer_enc_length))  # fill up buffer, until it has the expected size
 
         client.send(buffer_enc_length)
         client.send(action_enc)
@@ -72,6 +73,7 @@ class NetworkServer:
             buffer_length = conn.recv(HEADER).decode(FORMAT)
             if not buffer_length:
                 print(f"\33[33;1m[ERROR]\33[0m Lost connection with client ({addr})")
+                self.clients.remove(conn)
                 sys.exit()
 
             if buffer_length:
@@ -80,5 +82,12 @@ class NetworkServer:
                 if isinstance(action, pt.Start):
                     if not self.check_running():
                         self.runs.append(Run(len(self.runs), action.start_time, self.sensor))
+                if isinstance(action, pt.StatusRequest):
+                    self.answer_status(conn, action)
 
-        conn.close()
+    def answer_status(self, client, action):
+        if action.status_type == "run":
+            answer = pt.StatusAnswer(status_type=action.status_type, track_clear=True)
+            if self.check_running():
+                answer.track_clear = False
+            self.sendAction(client, answer)

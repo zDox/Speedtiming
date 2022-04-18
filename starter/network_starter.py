@@ -15,9 +15,11 @@ PORT = 6700
 FORMAT = 'utf-8'
 HEADER = 64  # buffer size for header
 
+
 class NetworkStarter:
     def __init__(self):
-        ip = socket.gethostbyname(socket.gethostname())
+        # ip = socket.gethostbyname(socket.gethostname())
+        ip = "192.168.30.30"
         self.addr = ip, PORT  # address for socket to connect to
 
         self.client = socket.socket()
@@ -45,15 +47,21 @@ class NetworkStarter:
         if hasattr(action, "data_length"):
             self.client.sendall(data)
 
-    def waitAction(self):
+    def ask_track_clear(self):
+        request_packet = pt.StatusRequest(status_type="run")
+        self.sendAction(request_packet)
+
+    def handle_answer(self):
         # receive and decode the length of the message
         buffer_length = self.client.recv(HEADER).decode(FORMAT)
         if not buffer_length:
             self.connected = False
             self.connect_to_server()
-            self.waitAction()
+            self.handle_answer()
         if buffer_length:
             action_dc = self.client.recv(int(buffer_length))
             action = pickle.loads(action_dc)
             if isinstance(action, pt.StartStarter):
                 return True
+            if isinstance(action, pt.StatusAnswer):
+                return action

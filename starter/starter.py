@@ -36,18 +36,20 @@ class Starter:
     def start_run(self, channel):
         if not self.starting:
             self.starting = True
-            for i in range(COUNTDOWN_TIME):
-                sleep(1)
-                print(COUNTDOWN_TIME - i)
-            sleep(random.uniform(0, RANDOM_TIME_FACTOR))
-            start_time = time()
-            print("GOOO")
-            start_packet = pt.Start(start_time)
-            self.network_starter.sendAction(start_packet)
+            status_answer = self.network_starter.ask_track_clear()
+            if status_answer.status_type == "run" and status_answer.track_clear:
+                for i in range(COUNTDOWN_TIME):
+                    sleep(1)
+                    print(COUNTDOWN_TIME - i)
+                sleep(random.uniform(0, RANDOM_TIME_FACTOR))
+                start_time = time()
+                print("GOOO")
+                start_packet = pt.Start(start_time)
+                self.network_starter.sendAction(start_packet)
 
     def wait_start(self):
         while True:
-            if self.network_starter.waitAction():
+            if self.network_starter.handle_answer():
                 self.start_run("test")
                 self.starting = False
 
@@ -56,7 +58,6 @@ class Starter:
             if GPIO.input(10) == GPIO.HIGH:
                 self.start_run("test")
                 self.starting = False
-            sleep(0.2)
 
 
 if __name__ == '__main__':
