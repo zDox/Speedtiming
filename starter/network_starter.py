@@ -24,19 +24,14 @@ class NetworkStarter:
         self.connected = False
 
     def connect_to_server(self):
-        i = 10
         while not self.connected:
-            i -= 1
             try:
                 self.client = socket.socket()
                 self.client.connect(self.addr)
                 self.connected = True
                 break
             except socket.error:
-                sleep(2)
-                if i == 0:
-                    break
-                pass
+                sleep(1)
 
     def sendAction(self, action, data=None):
         action_enc = pickle.dumps(action)
@@ -54,7 +49,9 @@ class NetworkStarter:
         # receive and decode the length of the message
         buffer_length = self.client.recv(HEADER).decode(FORMAT)
         if not buffer_length:
-            exit("No Connection")
+            self.connected = False
+            self.connect_to_server()
+            self.waitAction()
         if buffer_length:
             action_dc = self.client.recv(int(buffer_length))
             action = pickle.loads(action_dc)

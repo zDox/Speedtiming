@@ -1,3 +1,4 @@
+from time import time
 from tkinter import *
 from tkinter.ttk import Treeview
 
@@ -14,6 +15,8 @@ class GUI:
         self.lanes = []
         thread = tr.Thread(target=self.network_server.start, daemon=True)
         thread.start()
+        update_time = tr.Thread(target=self.update_time, daemon=True)
+        update_time.start()
 
         self.root = Tk()
         self.root.title("Chat APP")
@@ -63,6 +66,16 @@ class GUI:
         label_button.place(relwidth=1,
                            rely=0.825)
 
+        self.label_time = Label(self.root,
+                                text="00.0000",
+                                font="Arial 20 bold",
+                                bg="#17202A",
+                                fg="#f92713"
+                                )
+
+        self.label_time.place(relx=0.45,
+                              rely=0.75)
+
         button_start = Button(label_button,
                               text="Start Run",
                               font="Arial 10 bold",
@@ -87,17 +100,51 @@ class GUI:
                           relheight=0.06,
                           relwidth=0.22)
 
+        button_stop = Button(label_button,
+                             text="Stop Run",
+                             font="Arial 10 bold",
+                             width=1,
+                             bg="#f92713",
+                             command=self.stop_current_run)
+
+        button_stop.place(relx=0.01,
+                          rely=0.09,
+                          relheight=0.06,
+                          relwidth=0.22)
+
     def update(self):
         if self.network_server.runs:
-            for run in self.network_server.runs:
-                for i, lane in enumerate(run.lanes.items()):
-                    if lane not in self.lanes:
-                        row = run.id * const.LANE_COUNT + lane[0]
-                        self.table.insert(parent="", index="end", iid=row, text=row,
-                                          values=(run.id, lane[0], lane[1]["total_time"], lane[1]["distance"]))
-                        self.table.pack(pady=20)
-                        self.lanes.append(lane)
+            self.update_table()
         self.root.after(1000, self.update)  # run itself again after 1000 ms
+
+    def update_table(self):
+        for run in self.network_server.runs:
+            for i, lane in enumerate(run.lanes.items()):
+                if lane not in self.lanes:
+                    row = run.id * const.LANE_COUNT + lane[0]
+                    self.table.insert(parent="", index="end", iid=row, text=row,
+                                      values=(run.id, lane[0], lane[1]["total_time"], lane[1]["distance"]))
+                    self.table.pack(pady=20)
+                    self.lanes.append(lane)
+
+    def update_time(self):
+        while True:
+            if self.network_server.runs:
+                latest_run = self.network_server.runs[-1]
+                if latest_run.running:
+                    if self.label_time.cget("fg") == "#f92713":
+                        self.label_time.configure(fg="#4BB543")
+                    self.label_time.configure(text=round(time() - latest_run.start_time, 4))
+                    self.label_time.update()
+                # Checks if label is not already red
+                elif not latest_run.running and self.label_time.cget("fg") != "#f92713":
+                    self.label_time.configure(fg="#f92713")
+                    self.label_time.update()
+
+    def stop_current_run(self):
+        if self.network_server.runs:
+            current_run = self.network_server.runs[-1]
+            current_run.running = False
 
 
 if __name__ == '__main__':

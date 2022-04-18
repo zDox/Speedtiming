@@ -31,7 +31,7 @@ class Starter:
         if rpi:
             GPIO.add_event_detect(10, GPIO.RISING, callback=self.start_run)
 
-    def start_run(self):
+    def start_run(self, channel):
         for i in range(COUNTDOWN_TIME):
             sleep(1)
             print(COUNTDOWN_TIME - i)
@@ -44,7 +44,7 @@ class Starter:
     def wait_start(self):
         while True:
             if self.network_starter.waitAction():
-                self.start_run()
+                self.start_run("test")
 
 
 if __name__ == '__main__':

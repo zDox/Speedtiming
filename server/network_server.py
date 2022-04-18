@@ -41,8 +41,15 @@ class NetworkServer:
             print(f"\33[36;1m[ACTIVE CONNECTIONS]\33[0m {len(self.clients)}")
 
     def start_run(self):
-        for client in self.clients:
-            self.sendAction(client, pt.StartStarter())
+        if not self.check_running():
+            for client in self.clients:
+                self.sendAction(client, pt.StartStarter())
+
+    def check_running(self):
+        for run in self.runs:
+            if run.running:
+                return True
+        return False
 
     def sendAction(self, client, action, data=None):
         action_enc = pickle.dumps(action)
