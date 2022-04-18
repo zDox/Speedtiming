@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import threading as tr
 
 try:
     import RPi.GPIO as GPIO
@@ -29,8 +30,8 @@ class Starter:
         self.network_starter = NetworkStarter()
         self.network_starter.connect_to_server()
         self.starting = False
-        if rpi:
-            GPIO.add_event_detect(10, GPIO.RISING, callback=self.start_run)
+        button_thread = tr.Thread(target=self.check_button, daemon=True)
+        button_thread.start()
 
     def start_run(self, channel):
         if not self.starting:
@@ -43,12 +44,19 @@ class Starter:
             print("GOOO")
             start_packet = pt.Start(start_time)
             self.network_starter.sendAction(start_packet)
-            self.starting = False
 
     def wait_start(self):
         while True:
             if self.network_starter.waitAction():
                 self.start_run("test")
+                self.starting = False
+
+    def check_button(self):
+        while True:
+            if GPIO.input(10) == GPIO.HIGH:
+                self.start_run("test")
+                self.starting = False
+            sleep(0.2)
 
 
 if __name__ == '__main__':
