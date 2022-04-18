@@ -1,14 +1,15 @@
 import os
 import random
 import sys
+
 path = os.path.dirname(os.path.abspath(__file__)).split("/")
 path.pop(-1)
 path.append("packets")
-print(path)
 sys.path.append("/".join(path))
-
-from network_starter import NetworkStarter
 import packet_types as pt
+from network_starter import NetworkStarter
+
+
 
 from time import time, sleep
 
@@ -31,7 +32,11 @@ class Starter:
         start_packet = pt.Start(start_time)
         self.network_starter.sendAction(start_packet)
 
+    def wait_start(self):
+        while True:
+            if self.network_starter.waitAction():
+                self.start_run()
 
 if __name__ == '__main__':
     starter = Starter()
-    starter.start_run()
+    starter.wait_start()

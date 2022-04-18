@@ -5,3 +5,7 @@ from dataclasses import dataclass
 class Start:
     start_time: float
 
+
+@dataclass
+class StartStarter:
+    pass

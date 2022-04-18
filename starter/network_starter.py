@@ -1,6 +1,15 @@
+import sys
+from os import path
 import pickle
 import socket
 from time import sleep
+
+path = path.dirname(path.abspath(__file__)).split("/")
+path.pop(-1)
+path.append("packets")
+sys.path.append("/".join(path))
+
+import packet_types as pt
 
 PORT = 6700
 FORMAT = 'utf-8'
@@ -40,3 +49,14 @@ class NetworkStarter:
         self.client.send(action_enc)
         if hasattr(action, "data_length"):
             self.client.sendall(data)
+
+    def waitAction(self):
+        # receive and decode the length of the message
+        buffer_length = self.client.recv(HEADER).decode(FORMAT)
+        if not buffer_length:
+            exit("No Connection")
+        if buffer_length:
+            action_dc = self.client.recv(int(buffer_length))
+            action = pickle.loads(action_dc)
+            if isinstance(action, pt.StartStarter):
+                return True
