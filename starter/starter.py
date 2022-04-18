@@ -28,18 +28,22 @@ class Starter:
     def __init__(self):
         self.network_starter = NetworkStarter()
         self.network_starter.connect_to_server()
+        self.starting = False
         if rpi:
             GPIO.add_event_detect(10, GPIO.RISING, callback=self.start_run)
 
     def start_run(self, channel):
-        for i in range(COUNTDOWN_TIME):
-            sleep(1)
-            print(COUNTDOWN_TIME - i)
-        sleep(random.uniform(0, RANDOM_TIME_FACTOR))
-        start_time = time()
-        print("GOOO")
-        start_packet = pt.Start(start_time)
-        self.network_starter.sendAction(start_packet)
+        if not self.starting:
+            self.starting = True
+            for i in range(COUNTDOWN_TIME):
+                sleep(1)
+                print(COUNTDOWN_TIME - i)
+            sleep(random.uniform(0, RANDOM_TIME_FACTOR))
+            start_time = time()
+            print("GOOO")
+            start_packet = pt.Start(start_time)
+            self.network_starter.sendAction(start_packet)
+            self.starting = False
 
     def wait_start(self):
         while True:

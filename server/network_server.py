@@ -78,6 +78,7 @@ class NetworkServer:
                 action_dc = conn.recv(int(buffer_length))
                 action = pickle.loads(action_dc)
                 if isinstance(action, pt.Start):
-                    self.runs.append(Run(len(self.runs), action.start_time, self.sensor))
+                    if not self.check_running():
+                        self.runs.append(Run(len(self.runs), action.start_time, self.sensor))
 
         conn.close()
