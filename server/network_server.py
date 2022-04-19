@@ -3,6 +3,7 @@ import pickle
 import socket
 import sys
 import threading as tr
+import operator
 
 path = os.path.dirname(os.path.abspath(__file__)).split("/")
 path.pop(-1)
@@ -87,7 +88,6 @@ class NetworkServer:
 
     def answer_status(self, client, action):
         if action.status_type == "run":
-            answer = pt.StatusAnswer(status_type=action.status_type, track_clear=True)
-            if self.check_running():
-                answer.track_clear = False
+            answer = pt.StatusAnswer(status_type=action.status_type, track_clear=operator.not_(self.check_running()))
+            print(answer)
             self.sendAction(client, answer)

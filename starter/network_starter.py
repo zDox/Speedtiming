@@ -1,3 +1,4 @@
+import select
 import sys
 from os import path
 import pickle
@@ -50,8 +51,13 @@ class NetworkStarter:
     def ask_track_clear(self):
         request_packet = pt.StatusRequest(status_type="run")
         self.sendAction(request_packet)
+        return self.handle_answer()
 
-    def handle_answer(self):
+    def handle_answer(self, wait=True):
+        if not wait:
+            r, _, _ = select.select([self.client], [], [])
+            if not r:
+                return
         # receive and decode the length of the message
         buffer_length = self.client.recv(HEADER).decode(FORMAT)
         if not buffer_length:

@@ -46,18 +46,19 @@ class Starter:
                 print("GOOO")
                 start_packet = pt.Start(start_time)
                 self.network_starter.sendAction(start_packet)
+                self.starting = False
 
     def wait_start(self):
         while True:
-            if self.network_starter.handle_answer():
-                self.start_run("test")
-                self.starting = False
+            if not self.starting:
+                if self.network_starter.handle_answer(True):
+                    self.start_run("test")
+            sleep(0.5)
 
     def check_button(self):
         while True:
             if GPIO.input(10) == GPIO.HIGH:
                 self.start_run("test")
-                self.starting = False
 
 
 if __name__ == '__main__':
