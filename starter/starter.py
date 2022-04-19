@@ -51,14 +51,13 @@ class Starter:
     def wait_start(self):
         while True:
             if not self.starting:
-                if self.network_starter.handle_answer(True):
+                if self.network_starter.handle_answer(False):
                     self.start_run("test")
-            sleep(0.5)
+                if self.check_button():
+                    self.start_run("test")
 
     def check_button(self):
-        while True:
-            if GPIO.input(10) == GPIO.HIGH:
-                self.start_run("test")
+        return GPIO.input(10) == GPIO.HIGH
 
 
 if __name__ == '__main__':
