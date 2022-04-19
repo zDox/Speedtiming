@@ -24,6 +24,7 @@ class NetworkStarter:
         self.addr = ip, PORT  # address for socket to connect to
 
         self.client = socket.socket()
+        self.client.settimeout(0.2)
         self.connected = False
 
     def connect_to_server(self):
@@ -55,19 +56,22 @@ class NetworkStarter:
 
     def handle_answer(self, wait=True):
         if not wait:
-            r, _, _ = select.select([self.client], [], [])
-            if not r:
-                return
-        # receive and decode the length of the message
-        buffer_length = self.client.recv(HEADER).decode(FORMAT)
-        if not buffer_length:
-            self.connected = False
-            self.connect_to_server()
-            self.handle_answer()
-        if buffer_length:
-            action_dc = self.client.recv(int(buffer_length))
-            action = pickle.loads(action_dc)
-            if isinstance(action, pt.StartStarter):
-                return True
-            if isinstance(action, pt.StatusAnswer):
-                return action
+            self.client.setblocking(False)
+        else:
+            self.client.setblocking(True)
+        try:
+            # receive and decode the length of the message
+            buffer_length = self.client.recv(HEADER).decode(FORMAT)
+            if not buffer_length:
+                self.connected = False
+                self.connect_to_server()
+                self.handle_answer()
+            if buffer_length:
+                action_dc = self.client.recv(int(buffer_length))
+                action = pickle.loads(action_dc)
+                if isinstance(action, pt.StartStarter):
+                    return True
+                if isinstance(action, pt.StatusAnswer):
+                    return action
+        except BlockingIOError:
+            pass
